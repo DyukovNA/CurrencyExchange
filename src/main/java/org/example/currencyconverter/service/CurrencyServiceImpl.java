@@ -1,7 +1,6 @@
 package org.example.currencyconverter.service;
 
 import jakarta.annotation.PostConstruct;
-import org.example.currencyconverter.api.controller.CbrCurrencyService;
 import org.example.currencyconverter.api.dto.CurrencyDto;
 import org.example.currencyconverter.persistence.entity.Currency;
 import org.example.currencyconverter.persistence.repository.CurrencyRepository;
@@ -23,18 +22,18 @@ import java.util.List;
 @Component
 public class CurrencyServiceImpl implements CurrencyService {
     private final CurrencyRepository currencyRepository;
-    private final CbrCurrencyService cbrCurrencyService;
+    private final CbrRatesService cbrRatesService;
 
     /**
      * Конструктор для внедрения зависимостей.
      *
      * @param currencyRepository Репозиторий для работы с данными о валютах.
-     * @param cbrCurrencyService        API для получения курсов валют.
+     * @param cbrRatesService API для получения курсов валют.
      */
     @Autowired
-    public CurrencyServiceImpl(CurrencyRepository currencyRepository, CbrCurrencyService cbrCurrencyService) {
+    public CurrencyServiceImpl(CurrencyRepository currencyRepository, CbrRatesService cbrRatesService) {
         this.currencyRepository = currencyRepository;
-        this.cbrCurrencyService = cbrCurrencyService;
+        this.cbrRatesService = cbrRatesService.getInstance();
     }
 
 
@@ -44,7 +43,7 @@ public class CurrencyServiceImpl implements CurrencyService {
      */
     @PostConstruct
     public void createAndFillDB() {
-        List<CurrencyDto> currencyDtoList = cbrCurrencyService.getCurrenciesRates();
+        List<CurrencyDto> currencyDtoList = cbrRatesService.getCurrenciesRates();
         this.saveAll(currencyDtoList);
         System.out.println("База данных успешно заполнена актуальными курсами валют.");
     }
@@ -55,7 +54,7 @@ public class CurrencyServiceImpl implements CurrencyService {
      */
     @Scheduled(cron="0 0 0 * * ?")
     public void updateDB() {
-        List<CurrencyDto> currencyDtoList = cbrCurrencyService.getCurrenciesRates();
+        List<CurrencyDto> currencyDtoList = cbrRatesService.getCurrenciesRates();
         this.updateAll(currencyDtoList);
     }
 

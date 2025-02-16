@@ -1,4 +1,4 @@
-package org.example.currencyconverter.api.controller;
+package org.example.currencyconverter.service;
 
 import com.google.gson.Gson;
 import org.example.currencyconverter.api.dto.CurrencyDto;
@@ -16,16 +16,26 @@ import java.util.List;
  * Класс для работы с API ЦБ РФ
  */
 @Component
-public class CbrCurrencyService {
+public final class CbrRatesService {
+
     /**
-     * Поле объекта, содержащего данные, полученные после обращения к API
+     * Инициализация сущности сервиса
      */
-    private JSONObject currenciesData = null;
+    private static final CbrRatesService INSTANCE = new CbrRatesService();
     /**
      * URL API Центрального Банка России для получения актуальных курсов валют. Курс обновляется ежедневно
      */
     private static final String CBR_URL = "https://www.cbr-xml-daily.ru/daily_json.js";
 
+    private CbrRatesService(){}
+
+    /**
+     * Метод получения сущности сервиса
+     * @return Сущность сервиса
+     */
+    public CbrRatesService getInstance() {
+        return INSTANCE;
+    }
 
     /**
      * Получает данные о валютах от API ЦБ РФ.
